@@ -1,0 +1,117 @@
+Option Explicit
+
+Sub CopyPasteData(ByVal FilePath As String)
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+
+    ' Declare variables
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Excel.Worksheet
+    Dim TemplateWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    
+    Dim rownum As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim FSO As Object
+
+    ' Set the source sheet
+    CurrentDateValue = Format(Date, "yyyymm")
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets("Tong hop qua CTN") ' Replace with your source sheet name
+    
+    'Clear any existing filters
+    On Error Resume Next
+      SourceSheet.ShowAllData
+    On Error GoTo 0
+    
+    rownum = SourceSheet.Range("a1").CurrentRegion.Rows.Count
+    
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Add
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+    
+    ' Copy
+    SourceSheet.Range("A1:D" & rownum).Copy
+    TemplateSheet.Range("A1").PasteSpecial Paste:=xlPasteValuesAndNumberFormats
+    
+    'Format
+    TemplateSheet.Range("A1:A" & rownum).Select
+    
+    Selection.TextToColumns DataType:=xlDelimited, _
+        ConsecutiveDelimiter:=False, _
+        Tab:=False, _
+        Semicolon:=False, _
+        Comma:=False, _
+        Space:=False, _
+        Other:=True, _
+        OtherChar:="x", FieldInfo:=Array(Array(1, xlTextFormat))
+        
+        
+    TemplateSheet.Range("C2:C" & rownum).Select
+    
+    With Selection
+        .NumberFormat = "yyyy-mm-dd"
+        .Value = .Value
+    End With
+    
+    
+    '1. Apply Filter
+      TemplateSheet.Range("A1:D" & rownum).AutoFilter Field:=4, Criteria1:="Chuy?n lu?ng thông th??ng*"
+    
+    '2. Delete Rows
+        ExcelApp.DisplayAlerts = False
+          TemplateSheet.Range("A2:D" & rownum).SpecialCells(xlCellTypeVisible).Delete
+        ExcelApp.DisplayAlerts = True
+    
+    '3. Clear Filter
+        On Error Resume Next
+        TemplateSheet.ShowAllData
+        On Error GoTo 0
+    
+    ' Cap nhat lai
+    rownum = TemplateSheet.Range("a1").CurrentRegion.Rows.Count
+      
+    ' Remove duplicate
+    TemplateSheet.Range("A1:D" & rownum).RemoveDuplicates Columns:=Array(1, 3), Header:=xlYes
+
+    TemplateSheet.Range("A1:D" & rownum).Sort _
+    Key1:=Range("A1"), Order1:=xlAscending, _
+    Key2:=Range("C1"), Order2:=xlDescending, _
+    Header:=xlYes
+
+    TemplateSheet.Range("A1:D" & rownum).RemoveDuplicates Columns:=Array(1), Header:=xlYes
+    
+    TemplateSheet.Columns("D").EntireColumn.Delete
+
+    If TemplateSheet.AutoFilterMode Then TemplateSheet.AutoFilterMode = False
+
+    ' change name ws
+    TemplateSheet.Name = "COCAUNO"
+    
+    ' Clear the clipboard
+    ExcelApp.CutCopyMode = False
+    
+    ' Save the copied template workbook
+    TemplateCopyPath = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\COCAUNO_" & CurrentDateValue & ".xlsx"
+    CopiedTemplateWorkbook.SaveAs TemplateCopyPath, FileFormat:=xlOpenXMLWorkbook
+    
+    ' Save and close the copied template workbook
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+
+    ' Close the source workbook without saving changes and release the workbook object
+    SourceSheet.Parent.Close SaveChanges:=False
+    Set SourceSheet = Nothing
+    
+    Utility.CloseHiddenExcelInstances ' Call the subroutine to close hidden Excel instances
+    ' Quit the Excel application and release the objects
+
+
+End Sub
+
+

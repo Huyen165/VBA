@@ -1,0 +1,87 @@
+Attribute VB_Name = "BANCA_VC"
+Sub BancaBillFile()
+        ' Declare variables
+    Dim ExcelApp As Excel.Application
+    Dim TemplatePath As String
+    Dim ResultPath As String
+    Dim filePath As String
+    Dim ResultBook As String
+    Dim ResultSheet As String
+    Dim SourceBook As Workbook
+    Dim TemplateBook As Workbook
+    Dim SourceSheet As Worksheet
+    Dim TemplateSheet As Worksheet
+    Dim LastRow As Long
+    Dim LastRow1 As Long
+     Dim DateColumns As Range
+    Dim Cell As Range
+    Dim CellToFormat As Range
+    Dim dateValue As Date
+    Dim formattedDate As String
+
+    Set ExcelApp = New Excel.Application
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+    
+    ' Set the template file path, sheet
+    TemplatePath = "D:\FILE_EXCEL\TEMPLATE\BANCA_VC.xlsx"
+    ResultPath = "D:\FILE_EXCEL\OUTPUT\THANG11\BANCA_VC.xlsx"
+    filePath = "D:\FILE_EXCEL\INPUT\Month11\BANCA_VC_GOC.xlsx"
+    'DMPath = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\CMB_XML_HR.xlsx"
+    
+    Set SourceBook = ExcelApp.Workbooks.Open(filePath)
+    Set SourceSheet = SourceBook.Sheets(1)
+    
+    Set TemplateBook = ExcelApp.Workbooks.Open(TemplatePath)
+    Set TemplateSheet = TemplateBook.Sheets(1)
+    
+   ' Thêm c?t "Period" và d?t giá tr? là 202311
+   LastRow = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    'SourceSheet.Rows(LastRow).Delete
+   
+     ' B? merge theo dòng
+    For i = 1 To LastRow
+        With SourceSheet.Range("A" & i & ":A" & i).MergeArea
+            If .MergeCells Then
+                .UnMerge
+            End If
+        End With
+    Next i
+    
+      ' Xóa các dòng neu cot B rong
+    For i = LastRow To 1 Step -1
+        If SourceSheet.Cells(i, 3).Value = "" Then
+            SourceSheet.Rows(i).Delete
+        End If
+    Next i
+    
+        'SAU KHI XOA DONG THI COPY VAO FILE TEMPLATE
+    
+     SourceSheet.Range("A2:AE" & LastRow).Copy
+    TemplateSheet.Range("B2").PasteSpecial Paste:=xlPasteValues
+    
+      LastRow1 = TemplateSheet.Cells(SourceSheet.Rows.Count, "B").End(xlUp).Row
+    TemplateSheet.Range("A2:A" & LastRow1).Value = "202311"
+    MsgBox LastRow1
+    
+    ' Chuy?n các c?t thành d?nh d?ng van b?n
+     TemplateSheet.Columns("A:A").NumberFormat = "@"
+    TemplateSheet.Columns("C:C").NumberFormat = "@"
+    TemplateSheet.Columns("D:D").NumberFormat = "@"
+    TemplateSheet.Columns("P:P").NumberFormat = "@"
+    TemplateSheet.Columns("Q:Q").NumberFormat = "@"
+    TemplateSheet.Columns("V:V").NumberFormat = "@"
+    
+   ' Ch? d?nh các c?t ch?a ngày c?n chuy?n d?i d?nh d?ng (c?t G và H)
+    'Set DateColumns = TemplateSheet.Range("G:H")
+    Set DateRange = TemplateSheet.Range("H:I, N:N,AD:AD")
+    DateRange.NumberFormat = "dd/mm/yyyy"
+    
+  ' Close the source workbook without saving changes and release the workbook object
+    TemplateBook.SaveAs ResultPath, FileFormat:=xlOpenXMLWorkbook
+    'Templatebook.SaveAs DMPath, FileFormat:=xlOpenXMLWorkbook
+    TemplateBook.Close SaveChanges:=True
+    Set SourceSheet = Nothing
+    MsgBox "BANCA_VC DONE "
+End Sub
+

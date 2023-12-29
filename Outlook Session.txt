@@ -1,0 +1,177 @@
+Option Explicit
+
+Private WithEvents Items As Outlook.Items
+
+Private Sub Application_Startup()
+Dim Ns As Outlook.NameSpace
+Set Ns = Application.Session
+
+Set Ns = Application.GetNamespace("MAPI")
+Set Items = Ns.GetDefaultFolder(olFolderInbox).Parent.Folders("UPLOAD_EXCEL").Items
+End Sub
+
+Private Sub Items_ItemAdd(ByVal Item As Object)
+'On Error GoTo ErrorHandler
+
+Dim Atmt As Outlook.Attachment
+Dim FileName As String
+Dim SaveFolder As String
+
+If TypeName(Item) <> "MailItem" Then Exit Sub
+
+SaveFolder = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\"
+
+For Each Atmt In Item.Attachments
+
+    If Right(Atmt.FileName, 4) = ".zip" And (InStr(Atmt.FileName, "Danh") Or InStr(Atmt.FileName, "DS")) > 0 Then
+        Dim ZipFilePath As String
+        Dim UnzipFolderPath As String
+        Dim FSO As Object
+        Dim objFolder As Object
+        Dim objSubFolder As Object
+        Dim file As Scripting.file
+        
+        ZipFilePath = SaveFolder & Atmt.FileName
+        
+        Set FSO = Nothing
+        
+        Set FSO = CreateObject("Scripting.FileSystemObject")
+        Set objFolder = FSO.GetFolder(SaveFolder)
+                        
+                 
+        For Each objSubFolder In objFolder.SubFolders
+            If InStr(1, objSubFolder.Name, "PCRT") > 0 Then
+                objSubFolder.Delete (True)
+                Exit For
+            End If
+        Next objSubFolder
+        
+        FSO.CreateFolder SaveFolder & "PCRT\"
+             
+        UnzipFolderPath = SaveFolder & "PCRT\"
+        
+        
+        ' Save the zip file to the SaveFolder
+        ZipFilePath = SaveFolder & Atmt.FileName
+        
+        FileName = SaveFolder & Atmt.FileName
+        
+        Atmt.SaveAsFile FileName
+        Shell "powershell.exe -nologo -command ""& { Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory('" & ZipFilePath & "', '" & UnzipFolderPath & "') }""", vbHide
+        
+        Dim ExcelApp As Excel.Application
+        Set ExcelApp = New Excel.Application
+        ExcelApp.Wait Now + TimeValue("00:00:05")
+
+        For Each objSubFolder In objFolder.SubFolders
+            If InStr(1, objSubFolder.Name, "Danh") > 0 Then
+                objSubFolder.Name = "PCRT"
+                Exit For
+            End If
+        Next objSubFolder
+        
+        Set objFolder = FSO.GetFolder(SaveFolder & "PCRT\")
+        
+        
+        For Each file In objFolder.Files
+            ' Display the file name in a message box
+            If LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(file.Name, "BCA") > 0 Then
+                FileName = SaveFolder & "PCRT\" & file.Name
+             ' Call the CopyPasteData subroutine after saving the attachment
+                PCRT.CopyPasteData_BCA FileName
+            ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(file.Name, "DS UN") > 0 Then
+                FileName = SaveFolder & "PCRT\" & file.Name
+                ' Call the CopyPasteData subroutine after saving the attachment
+                PCRT.CopyPasteData_UN FileName
+           ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(file.Name, "DS My") > 0 Then
+                FileName = SaveFolder & "PCRT\" & file.Name
+                ' Call the CopyPasteData subroutine after saving the attachment
+                PCRT.CopyPasteData_My FileName
+           ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(file.Name, "DS EU") > 0 Then
+                FileName = SaveFolder & "PCRT\" & file.Name
+                ' Call the CopyPasteData subroutine after saving the attachment
+                PCRT.CopyPasteData_EU FileName
+           End If
+        Next file
+        
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "WL SME") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        WatchList.CopyPasteData FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "KSSV") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        KSSV.CopyPasteData FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "Báo cáo KH") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        KHNgungHoatDong.CopyPasteData FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "EWS-SME") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        EWS_BOTTOMUP.CopyPasteData FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "CTN") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        COCAUNO.CopyPasteData FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "Behavior") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        
+        ' Call the CopyPasteData subroutine after saving the attachment
+        EWS_TOPDOWN.CopyPasteData FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "BCA") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        PCRT.CopyPasteData_BCA FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "DS UN") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        PCRT.CopyPasteData_UN FileName
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "DS My") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        PCRT.CopyPasteData_My FileName
+        
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "Private list") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        PCRT.CopyPasteData_Private_list FileName
+        
+        ' Su dung Lcase cho XLSX -> xlsx
+    ElseIf LCase(Right(Atmt.FileName, 5)) = ".xlsx" And InStr(Atmt.FileName, "BAD_BRANCH") > 0 Then
+        FileName = SaveFolder & Atmt.FileName
+        FileName = SaveFolder & Format(Now, "yyyymmddhhmmss") & "_" & Atmt.FileName
+        MsgBox "Downloaded Bad Branch" & FileName
+        Atmt.SaveAsFile FileName
+        ' Call the CopyPasteData subroutine after saving the attachment
+        BAD_BRANCH.CopyPasteData FileName
+
+    End If
+Next Atmt
+
+MsgBox "Done Upload Excel"
+
+Exit Sub
+End Sub
+

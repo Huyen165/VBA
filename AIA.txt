@@ -1,0 +1,61 @@
+Attribute VB_Name = "AIA"
+Sub BancaBillFile()
+        ' Declare variables
+    Dim ExcelApp As Excel.Application
+    Dim TemplatePath As String
+    Dim ResultPath As String
+    Dim filePath As String
+    Dim ResultBook As String
+    Dim ResultSheet As String
+    Dim SourceBook As Workbook
+    Dim TemplateBook As Workbook
+    Dim SourceSheet As Worksheet
+    Dim TemplateSheet As Worksheet
+    Dim LastRow As Long
+     Dim DateColumns As Range
+    Dim Cell As Range
+    Dim CellToFormat As Range
+
+
+    Set ExcelApp = New Excel.Application
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+    
+    ' Set the template file path, sheet
+    TemplatePath = "D:\FILE_EXCEL\TEMPLATE\AIA.xlsx"
+    ResultPath = "D:\FILE_EXCEL\OUTPUT\THANG11\AIA.xlsx"
+    filePath = "D:\FILE_EXCEL\INPUT\Month11\AIA_GOC.xlsx"
+    
+    Set SourceBook = ExcelApp.Workbooks.Open(filePath)
+    Set SourceSheet = SourceBook.Sheets(1)
+    
+    Set TemplateBook = ExcelApp.Workbooks.Open(TemplatePath)
+    Set TemplateSheet = TemplateBook.Sheets(1)
+    
+   ' Thêm c?t "Period" và d?t giá tr? là 202311
+   LastRow = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    SourceSheet.Range("A3:AP" & LastRow).Copy
+    TemplateSheet.Range("A2").PasteSpecial Paste:=xlPasteValues
+    
+    ' Chuy?n các c?t thành d?nh d?ng van b?n
+     TemplateSheet.Columns("C:C").NumberFormat = "@"
+    TemplateSheet.Columns("E:E").NumberFormat = "@"
+    TemplateSheet.Columns("F:F").NumberFormat = "@"
+    TemplateSheet.Columns("O:O").NumberFormat = "@"
+    TemplateSheet.Columns("P:P").NumberFormat = "@"
+    TemplateSheet.Columns("Q:Q").NumberFormat = "@"
+    TemplateSheet.Columns("R:R").NumberFormat = "@"
+     TemplateSheet.Columns("S:S").NumberFormat = "@"
+    TemplateSheet.Columns("Z:Z").NumberFormat = "@"
+    TemplateSheet.Columns("AE:AE").NumberFormat = "@"
+    TemplateSheet.Columns("AF:AF").NumberFormat = "@"
+    
+  ' Close the source workbook without saving changes and release the workbook object
+    TemplateBook.SaveAs ResultPath, FileFormat:=xlOpenXMLWorkbook
+    'Templatebook.SaveAs DMPath, FileFormat:=xlOpenXMLWorkbook
+    TemplateBook.Close SaveChanges:=True
+    Set SourceSheet = Nothing
+    MsgBox "AIA DONE "
+End Sub
+
+

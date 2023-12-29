@@ -1,0 +1,88 @@
+Option Explicit
+Sub CopyPasteData(ByVal FilePath As String)
+
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+    
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Worksheet
+    Dim SourceSheet_2 As Worksheet
+    Dim DestinationWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    
+    Dim LastRowSource As Long
+    Dim LastRowSource_2 As Long
+    Dim LastRowDestination As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim SavedPath As String
+    Dim FSO As Object
+    
+    ' Set source and destination worksheets
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets(1)
+    Set SourceSheet_2 = SourceBook.Sheets(2)
+    
+    ' Set the template file path
+    TemplateFilePath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\Danh sach EWS Topdown_.xlsx"
+
+    ' Calculate the current date value in the format yyyymm
+    CurrentDateValue = Format(Date, "yyyymm")
+
+    ' Set the template copy file path
+    TemplateCopyPath = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\Danh sach EWS Topdown_" & CurrentDateValue & ".xlsx"
+
+    ' Copy the template file to the new location
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    
+    FSO.CopyFile TemplateFilePath, TemplateCopyPath
+
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Open(TemplateCopyPath)
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+
+    ' Find the last non-empty row in the source sheet
+    LastRowSource = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    
+    ' Find the last non-empty row in the destination sheet
+    LastRowDestination = TemplateSheet.Cells(TemplateSheet.Rows.Count, "A").End(xlUp).Row
+    
+        ' Copy data from source sheet to destination sheet based on specific cell addresses
+    SourceSheet.Range("A3:A" & LastRowSource).Copy TemplateSheet.Range("A2:A" & LastRowDestination)
+    SourceSheet.Range("B3:B" & LastRowSource).Copy TemplateSheet.Range("B2:B" & LastRowDestination)
+    SourceSheet.Range("C3:C" & LastRowSource).Copy TemplateSheet.Range("C2:C" & LastRowDestination)
+    SourceSheet.Range("D3:D" & LastRowSource).Copy TemplateSheet.Range("E2:E" & LastRowDestination)
+    SourceSheet.Range("E3:E" & LastRowSource).Copy TemplateSheet.Range("D2:D" & LastRowDestination)
+    SourceSheet.Range("F3:F" & LastRowSource).Copy TemplateSheet.Range("H2:H" & LastRowDestination)
+    SourceSheet.Range("L3:L" & LastRowSource).Copy TemplateSheet.Range("I2:I" & LastRowDestination)
+    SourceSheet.Range("J3:J" & LastRowSource).Copy TemplateSheet.Range("G2:G" & LastRowDestination)
+    SourceSheet.Range("I3:I" & LastRowSource).Copy TemplateSheet.Range("F2:F" & LastRowDestination)
+    SourceSheet.Range("G3:G" & LastRowSource).Copy TemplateSheet.Range("J2:J" & LastRowDestination)
+    
+    ' Sheets(2)
+    ' Find the last non-empty row in the source sheet
+    LastRowSource_2 = SourceSheet_2.Cells(Rows.Count, "A").End(xlUp).Row
+    
+    SourceSheet_2.Range("A2:C" & LastRowSource_2).Copy
+    CopiedTemplateWorkbook.Sheets(2).Range("A2").PasteSpecial Paste:=xlPasteValues
+    CopiedTemplateWorkbook.Sheets(2).Range("C:C").NumberFormat = "@"
+
+    ' Save and close the copied template workbook
+    SavedPath = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\Danh sach EWS Topdown_" & CurrentDateValue & ".xlsx"
+    CopiedTemplateWorkbook.SaveAs SavedPath, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+
+    
+    ' Close the source workbook without saving changes and release the workbook object
+    SourceBook.Close SaveChanges:=False
+    Set SourceSheet = Nothing
+    
+    Utility.CloseHiddenExcelInstances
+End Sub
+
+

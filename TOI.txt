@@ -1,0 +1,70 @@
+Attribute VB_Name = "TOI"
+Option Explicit
+
+Sub TOI()
+    ' Declare variables
+    Dim ExcelApp As Excel.Application
+    Dim TemplatePath As String
+    Dim ResultPath As String
+    Dim filePath1 As String
+    Dim filePath2 As String
+    Dim DMPath As String
+    Dim ResultBook As String
+    Dim ResultSheet As String
+    Dim SourceBook As Workbook
+    Dim SourceBook_2 As Workbook
+    Dim TemplateBook As Workbook
+    Dim SourceSheet As Worksheet
+    Dim SourceSheet_2 As Worksheet
+    Dim TemplateSheet As Worksheet
+    Dim LastRow As Long
+    Dim LastRowResult As Long
+    Dim LastRow2 As Long
+    Dim currentDate As Date
+    Dim yearMonth As String
+    
+    Set ExcelApp = New Excel.Application
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+    
+    ' Set the template file path, sheet
+    TemplatePath = "D:\FILE_EXCEL\TEMPLATE\TOI_BY_DAO.xlsx"
+    ResultPath = "D:\FILE_EXCEL\OUTPUT\THANG11\TOI_BY_DAO.xlsx"
+    filePath1 = "D:\FILE_EXCEL\INPUT\Month11\TOI_BY_DAO_202311_P1.xlsx"
+    filePath2 = "D:\FILE_EXCEL\INPUT\Month11\TOI_BY_DAO_202311_P2.xlsx"
+    'DMPath = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\CMB_XML_HR.xlsx"
+
+    Set SourceBook = ExcelApp.Workbooks.Open(filePath1)
+    Set SourceSheet = SourceBook.Sheets(1)
+    Set SourceBook_2 = ExcelApp.Workbooks.Open(filePath2)
+    Set SourceSheet_2 = SourceBook_2.Sheets(1)
+    
+    Set TemplateBook = ExcelApp.Workbooks.Open(TemplatePath)
+    Set TemplateSheet = TemplateBook.Sheets(1)
+
+    LastRow = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    SourceSheet.Range("A2:V" & LastRow).Copy
+    TemplateSheet.Range("A2").PasteSpecial Paste:=xlPasteValues
+    
+    LastRow2 = SourceSheet_2.Cells(SourceSheet_2.Rows.Count, "A").End(xlUp).Row
+    'MsgBox LastRow2
+    SourceSheet_2.Range("A2:V" & LastRow2).Copy
+    TemplateSheet.Range("A" & LastRow + 1).PasteSpecial Paste:=xlPasteValues
+
+       ' Doi cac cot thanh text
+    TemplateSheet.Columns("D:D").NumberFormat = "@"
+    TemplateSheet.Columns("C:C").NumberFormat = "@"
+    TemplateSheet.Columns("E:E").NumberFormat = "@"
+    TemplateSheet.Columns("F:F").NumberFormat = "@"
+    TemplateSheet.Columns("K:K").NumberFormat = "@"
+    TemplateSheet.Columns("R:R").NumberFormat = "@"
+    TemplateSheet.Columns("S:S").NumberFormat = "@"
+
+    ' Close the source workbook without saving changes and release the workbook object
+    TemplateBook.SaveAs ResultPath, FileFormat:=xlOpenXMLWorkbook
+    'Templatebook.SaveAs DMPath, FileFormat:=xlOpenXMLWorkbook
+    TemplateBook.Close SaveChanges:=True
+    Set SourceSheet = Nothing
+    MsgBox "TOI DONE " & yearMonth
+End Sub
+

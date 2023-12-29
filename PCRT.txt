@@ -1,0 +1,471 @@
+
+Sub CopyPasteData_BCA(ByVal FilePath As String)
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+
+    ' Declare variables
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Excel.Worksheet
+    Dim TemplateWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    Dim Rng As Range
+    
+    Dim LastRowSource As Long
+    Dim LastRowDestination As Long
+    Dim LastRow As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim SavedPath As String
+    Dim FSO As Object
+
+    ' Set the source sheet
+
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets(1) ' Replace with your source sheet name
+
+    ' Set the template file path
+    TemplateFilePath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+
+    ' Calculate the current date value in the format yyyymm
+    CurrentDateValue = Format(Date, "yyyymm")
+
+    ' Set the template copy file path
+    TemplateCopyPath = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\phong chong rua tien.xlsx"
+
+    ' Copy the template file to the new location
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    FSO.CopyFile TemplateFilePath, TemplateCopyPath
+    
+    
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Open(TemplateCopyPath)
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+
+    LastRow = TemplateSheet.Cells(TemplateSheet.Rows.Count, "E").End(xlUp).Row
+    
+    Dim foundRange As Range
+    Set foundRange = TemplateSheet.Range("A1:E" & LastRow).Find("02 DS BCA", LookIn:=xlValues)
+    
+    If Not foundRange Is Nothing Then
+        With TemplateSheet.Range("A1:E" & LastRow)
+            .AutoFilter Field:=1, Criteria1:="02 DS BCA"
+            .Offset(1, 0).SpecialCells(xlCellTypeVisible).EntireRow.Delete
+        End With
+        TemplateSheet.AutoFilterMode = False
+    End If
+
+    
+    ' Find the last non-empty row in the source sheet
+    LastRowSource = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    
+    ' Find the last non-empty row in the destination sheet
+    LastRowDestination = TemplateSheet.Cells(TemplateSheet.Rows.Count, "A").End(xlUp).Row + 1
+    
+    ' Copy data from source sheet to destination sheet based on specific cell addresses
+    SourceSheet.Range("A2:A" & LastRowSource).Copy TemplateSheet.Range("B" & LastRowDestination)
+    SourceSheet.Range("B2:B" & LastRowSource).Copy TemplateSheet.Range("C" & LastRowDestination)
+    SourceSheet.Range("I2:I" & LastRowSource).Copy TemplateSheet.Range("D" & LastRowDestination)
+    SourceSheet.Range("M2:M" & LastRowSource).Copy TemplateSheet.Range("E" & LastRowDestination)
+    TemplateSheet.Range("E" & LastRowDestination & ":E" & (LastRowDestination + LastRowSource - 2)).NumberFormat = "yyyy-mm-dd"
+       
+    ' Close the Source workbook
+    SourceBook.Close SaveChanges:=False
+    ' Save and close the copied template workbook
+    SavedPath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+    SavedPath_2 = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\phong chong rua tien.xlsx"
+    CopiedTemplateWorkbook.SaveAs SavedPath, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.SaveAs SavedPath_2, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+    
+    ExcelApp.DisplayAlerts = True
+    ExcelApp.ScreenUpdating = True
+    Utility.CloseHiddenExcelInstances
+End Sub
+
+
+
+Sub CopyPasteData_UN(ByVal FilePath As String)
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+
+    ' Declare variables
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Excel.Worksheet
+    Dim TemplateWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    Dim Rng As Range
+    
+    Dim LastRowSource As Long
+    Dim LastRowDestination As Long
+    Dim LastRow As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim SavedPath As String
+    Dim FSO As Object
+
+    ' Set the source sheet
+
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets(1) ' Replace with your source sheet name
+
+    ' Set the template file path
+    TemplateFilePath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+
+    ' Calculate the current date value in the format yyyymm
+    CurrentDateValue = Format(Date, "yyyymm")
+
+    ' Set the template copy file path
+    TemplateCopyPath = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\phong chong rua tien.xlsx"
+    
+    ' Copy the template file to the new location
+
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    FSO.CopyFile TemplateFilePath, TemplateCopyPath
+    
+    
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Open(TemplateCopyPath)
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+
+    LastRow = TemplateSheet.Cells(TemplateSheet.Rows.Count, "E").End(xlUp).Row
+    
+    With TemplateSheet.Range("A1:E" & LastRow)
+        .AutoFilter Field:=1, Criteria1:="05 DS UN"
+        On Error Resume Next
+        .Offset(1, 0).SpecialCells(xlCellTypeVisible).EntireRow.Delete
+        On Error GoTo 0
+    End With
+    
+    TemplateSheet.AutoFilterMode = False
+    
+    ' Find the last non-empty row in the source sheet
+    LastRowSource = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    
+    ' Find the last non-empty row in the destination sheet
+    LastRowDestination = TemplateSheet.Cells(TemplateSheet.Rows.Count, "A").End(xlUp).Row + 1
+    
+    ' Copy data from source sheet to destination sheet based on specific cell addresses
+    SourceSheet.Range("A2:A" & LastRowSource).Copy TemplateSheet.Range("B" & LastRowDestination)
+    SourceSheet.Range("B2:B" & LastRowSource).Copy TemplateSheet.Range("C" & LastRowDestination)
+    SourceSheet.Range("L2:L" & LastRowSource).Copy TemplateSheet.Range("E" & LastRowDestination)
+    TemplateSheet.Range("E" & LastRowDestination & ":E" & (LastRowDestination + LastRowSource - 2)).NumberFormat = "yyyy-mm-dd"
+        
+    TemplateSheet.Range("A" & LastRowDestination & ":A" & (LastRowDestination + LastRowSource - 2)).Value = "05 DS UN"
+    
+    ' Close the Source workbook
+    SourceBook.Close SaveChanges:=False
+    ' Save and close the copied template workbook
+    SavedPath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+    SavedPath_2 = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\phong chong rua tien.xlsx"
+    CopiedTemplateWorkbook.SaveAs SavedPath, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.SaveAs SavedPath_2, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+    
+    ExcelApp.DisplayAlerts = True
+    ExcelApp.ScreenUpdating = True
+    Utility.CloseHiddenExcelInstances
+End Sub
+
+Sub CopyPasteData_Private_list(ByVal FilePath As String)
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+
+    ' Declare variables
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Excel.Worksheet
+    Dim TemplateWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    Dim Rng As Range
+    
+    Dim LastRowSource As Long
+    Dim LastRowDestination As Long
+    Dim LastRow As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim SavedPath As String
+    Dim FSO As Object
+
+    ' Set the source sheet
+
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets(1) ' Replace with your source sheet name
+
+    ' Set the template file path
+    TemplateFilePath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+
+    ' Calculate the current date value in the format yyyymm
+    CurrentDateValue = Format(Date, "yyyymm")
+
+    ' Set the template copy file path
+    TemplateCopyPath = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\phong chong rua tien.xlsx"
+    
+    ' Copy the template file to the new location
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    FSO.CopyFile TemplateFilePath, TemplateCopyPath
+    
+    
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Open(TemplateCopyPath)
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+
+    LastRow = TemplateSheet.Cells(TemplateSheet.Rows.Count, "E").End(xlUp).Row
+      
+    Dim foundRange As Range
+    Set foundRange = TemplateSheet.Range("A1:E" & LastRow).Find("11 PRIVATE LIST", LookIn:=xlValues)
+    
+    If Not foundRange Is Nothing Then
+        With TemplateSheet.Range("A1:E" & LastRow)
+            .AutoFilter Field:=1, Criteria1:="11 PRIVATE LIST"
+            .Offset(1, 0).SpecialCells(xlCellTypeVisible).EntireRow.Delete
+        End With
+        TemplateSheet.AutoFilterMode = False
+    End If
+    
+      
+    ' Find the last non-empty row in the source sheet
+    LastRowSource = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    
+    ' Find the last non-empty row in the destination sheet
+    LastRowDestination = TemplateSheet.Cells(TemplateSheet.Rows.Count, "A").End(xlUp).Row + 1
+    
+    ' Copy data from source sheet to destination sheet based on specific cell addresses
+    SourceSheet.Range("A3:A" & LastRowSource).Copy TemplateSheet.Range("B" & LastRowDestination)
+    SourceSheet.Range("C3:C" & LastRowSource).Copy TemplateSheet.Range("C" & LastRowDestination)
+    SourceSheet.Range("F3:F" & LastRowSource).Copy TemplateSheet.Range("D" & LastRowDestination)
+    SourceSheet.Range("M2:M" & LastRowSource).Copy TemplateSheet.Range("E" & LastRowDestination)
+    TemplateSheet.Range("E" & LastRowDestination & ":E" & (LastRowDestination + LastRowSource - 2)).NumberFormat = "yyyy-mm-dd"
+    
+    TemplateSheet.Range("A" & LastRowDestination & ":A" & (LastRowDestination + LastRowSource - 3)).Value = "11 PRIVATE LIST"
+    
+    ' Close the Source workbook
+    SourceBook.Close SaveChanges:=False
+    
+
+    ' Save and close the copied template workbook
+    SavedPath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+    SavedPath_2 = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\phong chong rua tien.xlsx"
+    CopiedTemplateWorkbook.SaveAs SavedPath, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.SaveAs SavedPath_2, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+    
+    Utility.CloseHiddenExcelInstances
+
+End Sub
+
+Sub CopyPasteData_My(ByVal FilePath As String)
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+
+    ' Declare variables
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Excel.Worksheet
+    Dim TemplateWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    Dim Rng As Range
+    
+    Dim LastRowSource As Long
+    Dim LastRowDestination As Long
+    Dim LastRow As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim SavedPath As String
+    Dim FSO As Object
+
+    ' Set the source sheet
+
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets(1) ' Replace with your source sheet name
+    SourceSheet.ListObjects(1).AutoFilter.ShowAllData
+    
+    ' Set the template file path
+    TemplateFilePath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+
+    ' Calculate the current date value in the format yyyymm
+    CurrentDateValue = Format(Date, "yyyymm")
+
+    ' Set the template copy file path
+    TemplateCopyPath = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\phong chong rua tien.xlsx"
+
+    ' Copy the template file to the new location
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    FSO.CopyFile TemplateFilePath, TemplateCopyPath
+    
+    
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Open(TemplateCopyPath)
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+
+    LastRow = TemplateSheet.Cells(TemplateSheet.Rows.Count, "C").End(xlUp).Row
+       
+    Dim foundRange As Range
+    Set foundRange = TemplateSheet.Range("A1:E" & LastRow).Find("07 DS MY", LookIn:=xlValues)
+    
+    If Not foundRange Is Nothing Then
+        With TemplateSheet.Range("A1:E" & LastRow)
+            .AutoFilter Field:=1, Criteria1:="07 DS MY"
+            .Offset(1, 0).SpecialCells(xlCellTypeVisible).EntireRow.Delete
+        End With
+        TemplateSheet.AutoFilterMode = False
+    End If
+
+    
+    ' Find the last non-empty row in the source sheet
+    LastRowSource = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    
+    ' Find the last non-empty row in the destination sheet
+    LastRowDestination = TemplateSheet.Cells(TemplateSheet.Rows.Count, "A").End(xlUp).Row + 1
+    
+    ' Copy data from source sheet to destination sheet based on specific cell addresses
+    SourceSheet.Range("B2:B" & LastRowSource).Copy TemplateSheet.Range("B" & LastRowDestination)
+    SourceSheet.Range("C2:C" & LastRowSource).Copy TemplateSheet.Range("C" & LastRowDestination)
+    SourceSheet.Range("R2:R" & LastRowSource).Copy TemplateSheet.Range("D" & LastRowDestination)
+    SourceSheet.Range("A2:A" & LastRowSource).Copy TemplateSheet.Range("E" & LastRowDestination)
+       
+    TemplateSheet.Range("A" & LastRowDestination & ":A" & (LastRowDestination + LastRowSource - 2)).Value = "07 DS My"
+    TemplateSheet.Range("E" & LastRowDestination & ":E" & (LastRowDestination + LastRowSource - 2)) = "'" & Format(SourceSheet.Range("A2").Value, "yyyy-mm-dd")
+    
+    ' Close the Source workbook
+    SourceBook.Close SaveChanges:=False
+    ' Save and close the copied template workbook
+    SavedPath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+    SavedPath_2 = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\phong chong rua tien.xlsx"
+    CopiedTemplateWorkbook.SaveAs SavedPath, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.SaveAs SavedPath_2, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+    
+    ExcelApp.DisplayAlerts = True
+    ExcelApp.ScreenUpdating = True
+    Utility.CloseHiddenExcelInstances
+End Sub
+
+Sub CopyPasteData_EU(ByVal FilePath As String)
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+
+    ' Declare variables
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Excel.Worksheet
+    Dim TemplateWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    Dim Rng As Range
+    
+    Dim LastRowSource As Long
+    Dim LastRowDestination As Long
+    Dim LastRow As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim SavedPath As String
+    Dim FSO As Object
+
+    ' Set the source sheet
+
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets(1) ' Replace with your source sheet name
+    On Error Resume Next
+        SourceSheet.ListObjects(1).AutoFilter.ShowAllData
+    On Error GoTo 0
+    
+    ' Set the template file path
+    TemplateFilePath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+
+    ' Calculate the current date value in the format yyyymm
+    CurrentDateValue = Format(Date, "yyyymm")
+
+    ' Set the template copy file path
+    TemplateCopyPath = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\phong chong rua tien.xlsx"
+
+    ' Copy the template file to the new location
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    FSO.CopyFile TemplateFilePath, TemplateCopyPath
+    
+    
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Open(TemplateCopyPath)
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+    
+    ' Clear SourceSheet
+    LastRow = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    
+    With SourceSheet.Range("A1:BH" & LastRow)
+        .AutoFilter Field:=18, Criteria1:="="
+        .Offset(1, 0).SpecialCells(xlCellTypeVisible).EntireRow.Delete
+    End With
+    
+    SourceSheet.AutoFilterMode = False
+    
+    ' Clear TemplateSheet
+    LastRow = TemplateSheet.Cells(TemplateSheet.Rows.Count, "C").End(xlUp).Row
+
+    Dim foundRange As Range
+    Set foundRange = TemplateSheet.Range("A1:E" & LastRow).Find("06 DS EU", LookIn:=xlValues)
+    
+    If Not foundRange Is Nothing Then
+        With TemplateSheet.Range("A1:E" & LastRow)
+            .AutoFilter Field:=1, Criteria1:="06 DS EU"
+            .Offset(1, 0).SpecialCells(xlCellTypeVisible).EntireRow.Delete
+        End With
+        TemplateSheet.AutoFilterMode = False
+    End If
+    
+    ' Find the last non-empty row in the source sheet
+    LastRowSource = SourceSheet.Cells(SourceSheet.Rows.Count, "A").End(xlUp).Row
+    
+    ' Find the last non-empty row in the destination sheet
+    LastRowDestination = TemplateSheet.Cells(TemplateSheet.Rows.Count, "A").End(xlUp).Row + 1
+    
+    ' Copy data from source sheet to destination sheet based on specific cell addresses
+    SourceSheet.Range("B2:B" & LastRowSource).Copy TemplateSheet.Range("B" & LastRowDestination)
+    SourceSheet.Range("R2:R" & LastRowSource).Copy TemplateSheet.Range("C" & LastRowDestination)
+    SourceSheet.Range("A2:A" & LastRowSource).Copy TemplateSheet.Range("E" & LastRowDestination)
+    
+    TemplateSheet.Range("A" & LastRowDestination & ":A" & (LastRowDestination + LastRowSource - 2)).Value = "06 DS EU"
+    TemplateSheet.Range("E" & LastRowDestination & ":E" & (LastRowDestination + LastRowSource - 2)) = "'" & Format(SourceSheet.Range("A2").Value, "yyyy-mm-dd")
+    
+    ' Close the Source workbook
+    SourceBook.Close SaveChanges:=False
+    ' Save and close the copied template workbook
+    SavedPath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\phong chong rua tien.xlsx"
+    SavedPath_2 = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\phong chong rua tien.xlsx"
+    CopiedTemplateWorkbook.SaveAs SavedPath, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.SaveAs SavedPath_2, FileFormat:=xlOpenXMLWorkbook
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+    
+    ExcelApp.DisplayAlerts = True
+    ExcelApp.ScreenUpdating = True
+    Utility.CloseHiddenExcelInstances
+    
+End Sub
+
+
+
+
+
+
+
+
+

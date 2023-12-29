@@ -1,0 +1,51 @@
+Attribute VB_Name = "BANCA_BILL"
+Sub BancaBillFile()
+        ' Declare variables
+    Dim ExcelApp As Excel.Application
+    Dim TemplatePath As String
+    Dim ResultPath As String
+    Dim filePath As String
+    Dim ResultBook As String
+    Dim ResultSheet As String
+    Dim SourceBook As Workbook
+    Dim TemplateBook As Workbook
+    Dim SourceSheet As Worksheet
+    Dim TemplateSheet As Worksheet
+    Dim LastRow As Long
+
+
+    Set ExcelApp = New Excel.Application
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+    
+    ' Set the template file path, sheet
+    TemplatePath = "D:\FILE_EXCEL\TEMPLATE\BANCA_BILL.xlsx"
+    ResultPath = "D:\FILE_EXCEL\OUTPUT\THANG11\BANCA_BILL.xlsx"
+    filePath = "D:\FILE_EXCEL\INPUT\Month11\BANCA_BILL.xlsx"
+    'DMPath = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\CMB_XML_HR.xlsx"
+    
+    Set SourceBook = ExcelApp.Workbooks.Open(filePath)
+    Set SourceSheet = SourceBook.Sheets(1)
+    
+    Set ExcelApp = New Excel.Application
+    Set TemplateBook = ExcelApp.Workbooks.Open(TemplatePath)
+    Set TemplateSheet = TemplateBook.Sheets(1)
+    
+   ' Thêm c?t "Period" và d?t giá tr? là 202311
+   LastRow = SourceSheet.Cells(SourceSheet.Rows.Count, "B").End(xlUp).Row
+    TemplateSheet.Range("A2:A" & LastRow).Value = "202311"
+    SourceSheet.Range("A2:AE" & LastRow).Copy
+    TemplateSheet.Range("B2").PasteSpecial Paste:=xlPasteValues
+    
+    ' Chuy?n các c?t thành d?nh d?ng van b?n
+     TemplateSheet.Columns("A:A").NumberFormat = "@"
+    TemplateSheet.Columns("B:B").NumberFormat = "@"
+    TemplateSheet.Columns("AB:AB").NumberFormat = "@"
+
+  ' Close the source workbook without saving changes and release the workbook object
+    TemplateBook.SaveAs ResultPath, FileFormat:=xlOpenXMLWorkbook
+    'Templatebook.SaveAs DMPath, FileFormat:=xlOpenXMLWorkbook
+    TemplateBook.Close SaveChanges:=True
+    Set SourceSheet = Nothing
+    MsgBox "BANCA_BILL DONE "
+End Sub

@@ -1,0 +1,75 @@
+Option Explicit
+
+Sub CopyPasteData(ByVal FilePath As String)
+    Dim ExcelApp As Excel.Application
+    Set ExcelApp = New Excel.Application
+
+    ExcelApp.DisplayAlerts = False
+    ExcelApp.ScreenUpdating = False
+
+    ' Declare variables
+    Dim SourceBook As Excel.Workbook
+    Dim SourceSheet As Excel.Worksheet
+    Dim TemplateWorkbook As Workbook
+    Dim CopiedTemplateWorkbook As Workbook
+    Dim TemplateSheet As Worksheet
+    
+    Dim LastRow As Long
+    Dim TemplateFilePath As String
+    Dim TemplateCopyPath As String
+    Dim CurrentDateValue As String
+    Dim SavedPath As String
+    Dim FSO As Object
+
+    ' Set the source sheet
+    Set SourceBook = ExcelApp.Workbooks.Open(FilePath)
+    Set SourceSheet = SourceBook.Sheets(1) ' Replace with your source sheet name
+
+    ' Set the template file path
+    TemplateFilePath = "\\vpbank.com.vn\datamb\Document\BIC\CBD\Hungpn5\023_UPLOADFILE\Template Excel\Danh sach khach hang ngung hoat dong_.xlsx"
+
+    ' Calculate the current date value in the format yyyymm
+    CurrentDateValue = Format(Date, "yyyymm")
+
+    ' Set the template copy file path
+    TemplateCopyPath = "C:\Users\hungpn5\Desktop\linh tinh\RAC\Thang 5\Excel\NewFolder\Danh sach khach hang ngung hoat dong_" & CurrentDateValue & ".xlsx"
+
+    ' Copy the template file to the new location
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    FSO.CopyFile TemplateFilePath, TemplateCopyPath
+
+    ' Open the copied template workbook
+    Set CopiedTemplateWorkbook = ExcelApp.Workbooks.Open(TemplateCopyPath)
+    Set TemplateSheet = CopiedTemplateWorkbook.Sheets(1) ' Replace with your template sheet name
+
+    ' Find the last non-empty row in column J of the source sheet
+    LastRow = SourceSheet.Cells(SourceSheet.Rows.Count, "J").End(xlUp).Row
+
+    ' Copy the data from B3 to the last non-empty cell in column J of the source sheet
+    SourceSheet.Range("B3:J" & LastRow).Copy
+
+    ' Paste the copied data into the B2 cell of the copied template sheet
+    TemplateSheet.Range("B2").PasteSpecial Paste:=xlPasteValuesAndNumberFormats
+    ' Clear the clipboard
+    ExcelApp.CutCopyMode = False
+
+    ' Fill cells A2 to the last row with the current date value in the format yyyymm
+    TemplateSheet.Range("A2:A" & (LastRow - 1)).Value = CurrentDateValue
+
+    ' Save and close the copied template workbook
+    SavedPath = "\\10.16.140.82\sme_dm\SME_DM_SOURCE_FILES\MONTHLY\Danh sach khach hang ngung hoat dong_" & CurrentDateValue & ".xlsx"
+    CopiedTemplateWorkbook.SaveAs SavedPath, FileFormat:=xlOpenXMLWorkbook
+    
+    CopiedTemplateWorkbook.Close SaveChanges:=True
+
+    ' Close the source workbook without saving changes and release the workbook object
+    SourceSheet.Parent.Close SaveChanges:=False
+    Set SourceSheet = Nothing
+    
+    Utility.CloseHiddenExcelInstances ' Call the subroutine to close hidden Excel instances
+    ' Quit the Excel application and release the objects
+
+
+End Sub
+
+

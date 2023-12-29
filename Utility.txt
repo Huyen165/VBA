@@ -1,0 +1,17 @@
+Option Explicit
+
+Sub CloseHiddenExcelInstances()
+    Dim objWMI As Object
+    Dim objProcess As Object
+    Dim strWMIQuery As String
+
+    strWMIQuery = "SELECT * FROM Win32_Process WHERE Name='EXCEL.EXE'"
+
+    Set objWMI = GetObject("winmgmts://./root/cimv2")
+
+    For Each objProcess In objWMI.ExecQuery(strWMIQuery)
+        objProcess.Terminate
+    Next
+
+    Set objWMI = Nothing
+End Sub
