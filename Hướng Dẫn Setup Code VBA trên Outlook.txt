@@ -1,0 +1,23 @@
+Hướng dẫn sử dụng VBA CODE trên Outlook -- Hungpn5
+
+1. Cài đặt VBA và thư viện VBA trên Outlook.
+Alt + F11: Bật VBA
+Vào Tools -> References -> Tích thêm các thư viện: Microsoft Office 16.0, Microsoft Excel 16.0, Microsoft Scripting Runtime.
+
+2. Tạo thư mục để nhận Excel
+1 số bạn tạo Folder "UPLOAD_Excel" nằm trong folder Inbox của Outlook,
+1 số bạn tạo Folder "UPLOAD_Excel" nằm ngang hàng folder Inbox của Outlook, --> Tùy thích. Tuy nhiên code của hungpn5 thì chọn option 2
+
+3. Tạo Rule Outlook.
+Outlook có phần Rule, dùng các Rule này để lưu các email có file excel cần xử lý về folder "UPLOAD_EXCEL"
+
+4. Viết Code VBA
+Quay trở lại VBA trên Outlook
++ Mở folder Microsoft Outlook Objects -> Module ThisOutlookSession --> Viết code để download file từ email Outlook tại đây. Từ đây cũng sẽ có bước code gọi ra các Module.
++ Module: Các phần xử lý excel sẽ được viết trong từ Module riêng biệt trong thư mục Modules
+
+Save Code VBA trong Outlook --> Nó sẽ không tự commit code cho Outlook đâu. --> Cần phải khởi động lại Outlook thì mới commit được
+ 
+.. Thay vì khởi động lại: ->> Sử dụng CMD để khởi động
+vào CMD gõ:
+outlook.exe /resetnavpane
